@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fonty/pages/home.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() => runApp(MyApp());
 
@@ -14,6 +15,11 @@ class MyApp extends StatelessWidget {
       ),
       home: Home(),
       supportedLocales: [Locale('ar')],
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
     );
   }
 }
