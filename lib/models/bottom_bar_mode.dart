@@ -1,0 +1,4 @@
+enum PageActive{
+  Orders,
+  Points
+}

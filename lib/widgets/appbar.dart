@@ -1,40 +1,54 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fonty/models/appBarMode.dart';
+import 'package:fonty/pages/cart.dart';
 
 class CustomAppBar extends StatelessWidget {
   final String title;
-  CustomAppBar({@required this.title});
+  final Mode mode;
+  CustomAppBar({@required this.title, this.mode});
   @override
   Widget build(BuildContext context) {
     return PreferredSize(
       preferredSize: Size(MediaQuery.of(context).size.width, 10.0),
       child: Container(
-        height: 120.0,
+        height: 50.0,
         color: Colors.black,
         child: Column(
-          children: <Widget>[_appBar(), _searchBar(context)],
+          children: <Widget>[_appBar(context)],
         ),
       ),
     );
   }
 
   // First Line
-  _appBar() {
+  _appBar(context) {
     return Container(
       height: 50.0,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.menu,
-              color: Colors.white,
-              size: 30.0,
-            ),
-          ),
+          mode == Mode.home
+              ? IconButton(
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                  icon: Icon(
+                    Icons.menu,
+                    color: Colors.white,
+                    size: 30.0,
+                  ),
+                )
+              : IconButton(
+                  icon: Icon(
+                    Icons.arrow_back_ios,
+                    color: Colors.white,
+                  ),
+                  onPressed: null),
           Text(
             title,
-            style: TextStyle(color: Colors.white, fontSize: 22),
+            style: TextStyle(
+                color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
           ),
           IconButton(
             icon: Icon(
@@ -42,6 +56,14 @@ class CustomAppBar extends StatelessWidget {
               color: Colors.white,
               size: 30.0,
             ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Cart(),
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -50,51 +72,4 @@ class CustomAppBar extends StatelessWidget {
 
   // Search bar
 
-  _searchBar(context) {
-    return Container(
-      height: 60.0,
-      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Container(
-            alignment: Alignment.center,
-            height: 70.0,
-            width: MediaQuery.of(context).size.width - 90.0,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(20.0),
-                  bottomRight: Radius.circular(20.0),
-                ),
-                color: Colors.white),
-            child: TextFormField(
-              decoration: InputDecoration(
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 15, vertical: 4),
-                border: InputBorder.none,
-              ),
-            ),
-          ),
-          InkWell(
-            child: Container(
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20.0),
-                  bottomLeft: Radius.circular(20.0),
-                ),
-                color: Colors.white,
-              ),
-              height: 50.0,
-              width: 50.0,
-              child: Icon(
-                Icons.search,
-                color: Colors.black,
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
 }

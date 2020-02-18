@@ -17,7 +17,7 @@ class _CutomSliderState extends State<CustomSlider> {
 
         child: CarouselSlider(
           viewportFraction: 1.0,
-      height: 250.0,
+      height: 170.0,
       items: <Widget>[_sliderItem(AssetImage('assets/photo.jpg'))],
     ));
   }
