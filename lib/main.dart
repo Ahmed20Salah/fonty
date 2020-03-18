@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fonty/pages/home.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:fonty/pages/login.dart';
 
 void main() => runApp(MyApp());
 
@@ -9,11 +9,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Fonty app',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Home(),
+      home: LoginScreen(),
       supportedLocales: [Locale('ar')],
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
