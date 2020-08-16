@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fonty/bloc/cart_bloc/cart_bloc.dart';
 import 'package:fonty/models/appBarMode.dart';
 import 'package:fonty/models/bottom_bar_mode.dart';
+import 'package:fonty/models/order.dart';
+import 'package:fonty/repository/home_repo.dart';
 import 'package:fonty/widgets/appbar.dart';
 import 'package:fonty/widgets/bottom_navigation.dart';
 
@@ -13,6 +17,14 @@ class Orders extends StatefulWidget {
 
 class _OrdersState extends State<Orders> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+  final CartBloc _bloc = CartBloc();
+  HomeRepository _homeRepository = HomeRepository();
+
+  @override
+  void initState() {
+    super.initState();
+    _bloc.add(GetOrder());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +42,41 @@ class _OrdersState extends State<Orders> {
                 title: 'الطلبات',
                 mode: Mode.anyPage,
               ),
-              _listingItems()
+              BlocConsumer(
+                  listener: (prev, state) {
+                    if (state is Loading) {
+                      showDialog(
+                        context: context,
+                        child: AlertDialog(
+                          elevation: 0.0,
+                          backgroundColor: Colors.transparent,
+                          content: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              CircularProgressIndicator(),
+                            ],
+                          ),
+                        ),
+                      );
+                    } else if (state is Error) {
+                      Navigator.pop(context);
+                      Scaffold.of(context).showSnackBar(
+                        SnackBar(
+                          content: Container(
+                            height: 20.0,
+                            alignment: Alignment.center,
+                            child: Text(state.error),
+                          ),
+                        ),
+                      );
+                    } else if (state is HaveOrderData) {
+                      Navigator.pop(context);
+                    }
+                  },
+                  bloc: _bloc,
+                  builder: (context, state) {
+                    return _listingItems();
+                  })
             ],
           ),
           CustomNavigationBar(mode: PageActive.Orders)
@@ -45,18 +91,17 @@ class _OrdersState extends State<Orders> {
       margin: EdgeInsets.symmetric(horizontal: 20.0),
       height: MediaQuery.of(context).size.height - 110,
       child: ListView.builder(
-        itemCount: 10,
+        itemCount: _homeRepository.orders.length,
         itemBuilder: (context, index) {
-          return _item();
+          return _item(_homeRepository.orders[index]);
         },
       ),
     );
   }
 
 // item
-  Widget _item() {
+  Widget _item(Order order) {
     return Container(
-      height: 110,
       padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
       margin: EdgeInsets.only(bottom: 20.0),
       decoration: BoxDecoration(
@@ -69,16 +114,16 @@ class _OrdersState extends State<Orders> {
           Container(
             alignment: Alignment.topLeft,
             child: Text(
-              '25/5/2020',
+              '  ${order.date.year}/ ${order.date.month}/${order.date.day}',
               style: TextStyle(fontSize: 12),
             ),
           ),
           Text(
-            'رقم الطلب: 25',
+            'رقم الطلب: ${order.id}',
             style: TextStyle(fontSize: 14),
           ),
           Text(
-            'برجر + سطله + ساندوتش + عصير',
+            '${order.items[0].name}',
             overflow: TextOverflow.fade,
             softWrap: false,
             style: TextStyle(fontSize: 14),
@@ -87,7 +132,7 @@ class _OrdersState extends State<Orders> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text(
-                'المجموع: 150ريال',
+                'المجموع: ${order.total}ريال',
                 overflow: TextOverflow.fade,
                 softWrap: false,
                 style: TextStyle(fontSize: 14),

@@ -1,15 +1,16 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fonty/bloc/user_bloc/user_bloc.dart';
-import 'package:fonty/pages/forget_password.dart';
 import 'package:fonty/pages/home.dart';
-import 'package:fonty/pages/register.dart';
 
-class LoginScreen extends StatelessWidget {
+class RegisterScrren extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _email = TextEditingController();
+  final TextEditingController _phone = TextEditingController();
+
   final TextEditingController _password = TextEditingController();
+  final TextEditingController _name = TextEditingController();
+  final TextEditingController _cpassword = TextEditingController();
   final _bloc = UserBloc();
   @override
   Widget build(BuildContext context) {
@@ -38,42 +39,17 @@ class LoginScreen extends StatelessWidget {
               SizedBox(
                 height: 50.0,
               ),
+              _namefield(),
               _emailfield(),
+              _phonefield(),
               _passwordfield(),
+              _confirmPasswordfield(),
               SizedBox(
                 height: 70.0,
               ),
               _submitButton(),
               SizedBox(
                 height: 40.0,
-              ),
-              Center(
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ForgetPasswordScreen()));
-                  },
-                  child: Text(' نسيت كلمة المرور؟', style: _titleStyle()),
-                ),
-              ),
-              SizedBox(
-                height: 20.0,
-              ),
-              Center(
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RegisterScrren()));
-                  },
-                  child: Text(
-                    ' عضو جديد ؟ سجل الان',
-                    style: _titleStyle(),
-                  ),
-                ),
               ),
               BlocListener<UserBloc, UserState>(
                   bloc: _bloc,
@@ -97,8 +73,8 @@ class LoginScreen extends StatelessWidget {
                       Scaffold.of(context).showSnackBar(
                         SnackBar(
                           content: Container(
-                            height: 20.0,
                             alignment: Alignment.center,
+                            height: 20.0,
                             child: Text(state.error),
                           ),
                         ),
@@ -130,7 +106,12 @@ class LoginScreen extends StatelessWidget {
                 if (_formKey.currentState.validate()) {
                   print('presssed');
                   _bloc.add(
-                    Login({'email': _email.text, 'password': _password.text}),
+                    Register({
+                      'name': _name.text,
+                      'email': _email.text,
+                      'password': _password.text,
+                      'phone': _phone.text
+                    }),
                   );
                 }
               },
@@ -148,6 +129,42 @@ class LoginScreen extends StatelessWidget {
             ),
           );
         });
+  }
+
+  Container _phonefield() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            height: 10.0,
+          ),
+          Text(
+            'رقم الجوال',
+            style: _titleStyle(),
+          ),
+          SizedBox(
+            height: 10.0,
+          ),
+          TextFormField(
+            validator: (val) {
+              if (val.isEmpty) {
+                return 'يرجي ادخال رقم جوال صحيح';
+              }
+            },
+            controller: _phone,
+            decoration: InputDecoration(
+              focusedBorder: _inputBorder(),
+              enabledBorder: _inputBorder(),
+              contentPadding:
+                  EdgeInsets.symmetric(vertical: 5, horizontal: 10.0),
+              border: _inputBorder(),
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   Container _emailfield() {
@@ -186,6 +203,42 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
+  Container _namefield() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            height: 10.0,
+          ),
+          Text(
+            'الاسم',
+            style: _titleStyle(),
+          ),
+          SizedBox(
+            height: 10.0,
+          ),
+          TextFormField(
+            validator: (val) {
+              if (val.isEmpty) {
+                return 'يرجي ادخال اسم صحيح';
+              }
+            },
+            controller: _name,
+            decoration: InputDecoration(
+              focusedBorder: _inputBorder(),
+              enabledBorder: _inputBorder(),
+              contentPadding:
+                  EdgeInsets.symmetric(vertical: 5, horizontal: 10.0),
+              border: _inputBorder(),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
   Container _passwordfield() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20.0),
@@ -204,13 +257,49 @@ class LoginScreen extends StatelessWidget {
           ),
           TextFormField(
             obscureText: true,
-
             validator: (val) {
               if (val.isEmpty) {
-                return 'يرجي ادخال كلمه مرور ';
+                return 'يرجي ادخال كلمه مرور';
               }
             },
             controller: _password,
+            decoration: InputDecoration(
+              focusedBorder: _inputBorder(),
+              enabledBorder: _inputBorder(),
+              contentPadding:
+                  EdgeInsets.symmetric(vertical: 5, horizontal: 10.0),
+              border: _inputBorder(),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Container _confirmPasswordfield() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            height: 10.0,
+          ),
+          Text(
+            'تاكيد كلمة المرور ',
+            style: _titleStyle(),
+          ),
+          SizedBox(
+            height: 10.0,
+          ),
+          TextFormField(
+            obscureText: true,
+            validator: (val) {
+              if (val != _password.text) {
+                return 'كلمه المرور لا تطابق';
+              }
+            },
+            controller: _cpassword,
             decoration: InputDecoration(
               focusedBorder: _inputBorder(),
               enabledBorder: _inputBorder(),

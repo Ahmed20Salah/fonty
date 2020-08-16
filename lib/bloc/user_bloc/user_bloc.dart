@@ -30,7 +30,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       if (re['status']) {
         yield Authenticated();
       } else {
-        yield Error(re['error']);
+        yield Error(re['errors']);
       }
     } else if (event is ForgetPasssword) {
       yield Loading();
@@ -47,9 +47,18 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         yield Pass();
       }
     } else if (event is Updata) {
+      yield Loading();
       var re = await _userRepository.updataPass(event.pass);
       if (re['status']) {
         yield Authenticated();
+      }
+    } else if (event is Checking) {
+      yield Loading();
+      var re = await _userRepository.checkAuth();
+      if (re) {
+        yield Authenticated();
+      } else {
+        yield Unauthenticated();
       }
     }
   }

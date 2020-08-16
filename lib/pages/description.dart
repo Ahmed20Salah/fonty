@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fonty/bloc/home_bloc/home_bloc.dart';
 import 'package:fonty/models/appBarMode.dart';
 import 'package:fonty/models/item.dart';
+import 'package:fonty/utilits/constant.dart';
 import 'package:fonty/widgets/appbar.dart';
 import 'package:fonty/widgets/bottom_navigation.dart';
 
@@ -16,7 +19,10 @@ class Description extends StatefulWidget {
 
 class _Description extends State<Description> {
   int count = 1;
-  final GlobalKey<ScaffoldState> _scaffoldKey =  GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final ConstantData constantData = ConstantData();
+
+  final HomeBloc _homeBloc = HomeBloc();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +43,53 @@ class _Description extends State<Description> {
               SizedBox(
                 height: 20.0,
               ),
-              _addtoCart()
+              _addtoCart(),
+              BlocListener(
+                bloc: _homeBloc,
+                child: Container(),
+                listener: (prev, current) {
+                  if (current is Loading) {
+                    showDialog(
+                      context: context,
+                      child: AlertDialog(
+                        elevation: 0.0,
+                        backgroundColor: Colors.transparent,
+                        content: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            CircularProgressIndicator(),
+                          ],
+                        ),
+                      ),
+                    );
+                  } else if (current is Error) {
+                    Navigator.pop(context);
+                    Scaffold.of(context).showSnackBar(
+                      SnackBar(
+                        content: Container(
+                          height: 20.0,
+                          alignment: Alignment.center,
+                          child: Text(current.error),
+                        ),
+                      ),
+                    );
+                  } else if (current is ItemAdded) {Navigator.pop(context);
+                    _scaffoldKey.currentState.showSnackBar(
+                      SnackBar(
+                        backgroundColor: Color(0xffC8C6C6),
+                        content: Container(
+                          height: 20.0,
+                          alignment: Alignment.center,
+                          child: Text(
+                            'تم الاضافه الي المشتريات ',
+                            style: TextStyle(color: Colors.black, fontSize: 16),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                },
+              )
             ],
           ),
           CustomNavigationBar()
@@ -53,7 +105,8 @@ class _Description extends State<Description> {
       decoration: BoxDecoration(
         image: DecorationImage(
           fit: BoxFit.cover,
-          image: AssetImage(widget.item.image),
+          image: NetworkImage(
+              '${constantData.url}/public/items/${widget.item.image}'),
         ),
       ),
     );
@@ -103,7 +156,9 @@ class _Description extends State<Description> {
                     color: Colors.black,
                     size: 16,
                   ),
-                  onPressed: null,
+                  onPressed: () {
+                    addOne();
+                  },
                 ),
                 Text(count.toString()),
                 IconButton(
@@ -112,7 +167,9 @@ class _Description extends State<Description> {
                     color: Colors.black,
                     size: 16,
                   ),
-                  onPressed: null,
+                  onPressed: () {
+                    minusOne();
+                  },
                 ),
               ],
             ),
@@ -138,18 +195,24 @@ class _Description extends State<Description> {
           ),
         ),
         onTap: () {
-          _scaffoldKey.currentState.showSnackBar(
-            SnackBar(
-              backgroundColor: Color(0xffC8C6C6),
-              content: Container(
-                height: 30.0,
-                alignment: Alignment.center,
-                child: Text('تم الاضافه الي المشتريات ' , style: TextStyle(color:Colors.black ,fontSize: 16),),
-              ),
-            ),
-          );
+          _homeBloc
+              .add(AddToCart(map: {'item': widget.item, 'count': count}));
         },
       ),
     );
+  }
+
+  addOne() {
+    setState(() {
+      count++;
+    });
+  }
+
+  minusOne() {
+    if (count >= 2) {
+      setState(() {
+        count--;
+      });
+    }
   }
 }

@@ -38,3 +38,8 @@ class Updata extends UserEvent {
   @override
   List<Object> get props => [];
 }
+
+class Checking extends UserEvent {
+  @override
+  List<Object> get props => [];
+}

@@ -5,5 +5,5 @@ class ConstantData {
     return _obj;
   }
 
-  final url = 'https://development-gouda.clicktopass.com';
+  final url = 'https://fontyback.clicktopass.com';
 }

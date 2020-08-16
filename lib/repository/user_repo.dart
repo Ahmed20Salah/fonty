@@ -20,7 +20,7 @@ class UserRepository {
     try {
       print('login');
       var re = await http.post(
-          'https://development-gouda.clicktopass.com/api/auth/login?email=${map['email']}&password=${map['password']}');
+          '${_data.url}/api/auth/login?email=${map['email']}&password=${map['password']}');
       var converted = jsonDecode(re.body);
       print(re.body);
       if (converted['status']) {
@@ -42,15 +42,16 @@ class UserRepository {
   register(map) async {
     try {
       var re = await http.post(
-          '${_data.url}/api/auth/register?email=${map['email']}&password=${map['password']}&name=${map['name']}');
+          '${_data.url}/api/auth/register?email=${map['email']}&password=${map['password']}&name=${map['name']}&phone=${map['phone']}');
       var converted = jsonDecode(re.body);
+      print(converted);
       if (converted['status']) {
         user = User.fromMap(converted['data']);
         _preferences = await SharedPreferences.getInstance();
         _preferences.setString('email', user.email);
         _preferences.setString('token', user.token);
         _preferences.setInt('id', user.id);
-        return converted['status'];
+        return {'status': converted['status']};
       }
       return converted;
     } catch (e) {
@@ -67,8 +68,21 @@ class UserRepository {
       'token': _preferences.get('token')
     });
     if (user.id != null) {
+      print(true);
       return true;
     }
+    print(false);
+    return false;
+  }
+
+  logout() async {
+    _preferences = await SharedPreferences.getInstance();
+    user = null;
+    _preferences = await SharedPreferences.getInstance();
+    _preferences.setString('email', null);
+    _preferences.setString('token', null);
+    _preferences.setInt('id', null);
+    print(false);
     return false;
   }
 
@@ -106,10 +120,11 @@ class UserRepository {
   }
 
   Future<Map> updataPass(String newPass) async {
-    print(code);
+    print(user.email);
+    print(newPass);
     try {
       var re = await http.put(
-          '${_data.url}/api/update_password?email=${user.email}&password=$newPass');
+          '${_data.url}/api/auth/update_password?email=${user.email}&password=$newPass');
       var converted = jsonDecode(re.body);
       print(converted);
       if (converted['status']) {

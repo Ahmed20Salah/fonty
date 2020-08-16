@@ -2,9 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fonty/models/bottom_bar_mode.dart';
 import 'package:fonty/pages/orders.dart';
+import 'package:fonty/pages/points.dart';
 
 class CustomNavigationBar extends StatelessWidget {
-  PageActive mode;
+  final PageActive mode;
   CustomNavigationBar({this.mode});
 
   @override
@@ -31,13 +32,19 @@ class CustomNavigationBar extends StatelessWidget {
                   SizedBox(
                     width: 6.0,
                   ),
-                  Container(
-                    child: Text(
-                      'النقاط',
-                      style: TextStyle(
-                        color: mode == PageActive.Points
-                            ? Color(0xffFABF18)
-                            : Colors.white,
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Points()));
+                    },
+                    child: Container(
+                      child: Text(
+                        'النقاط',
+                        style: TextStyle(
+                          color: mode == PageActive.Points
+                              ? Color(0xffFABF18)
+                              : Colors.white,
+                        ),
                       ),
                     ),
                   ),
