@@ -42,11 +42,13 @@ class _SplashState extends State<Splash> {
           },
           bloc: _userBloc,
           child: Container(
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage('assets/splash.png'), fit: BoxFit.cover)),
+            color: Colors.white,
+            // decoration: BoxDecoration(
+            // image: DecorationImage(
+            //     image: AssetImage('assets/splash.png'), fit: BoxFit.cover)),
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
+            child: Image.asset('assets/logo.png'),
           )),
     );
   }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fonty/bloc/user_bloc/user_bloc.dart';
 import 'package:fonty/pages/home.dart';
+import 'package:fonty/utilits/constant.dart';
+import './login.dart';
 
 class RegisterScrren extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -15,81 +17,155 @@ class RegisterScrren extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
+      body: Stack(
+        children: <Widget>[
+          Column(
             children: <Widget>[
-              SizedBox(
-                height: 24.0,
-              ),
               Container(
-                height: 50.0,
-                color: Colors.black,
-                width: MediaQuery.of(context).size.width,
-                alignment: Alignment.center,
-                child: Text(
-                  'تسجيل الدخول',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-              SizedBox(
-                height: 50.0,
-              ),
-              _namefield(),
-              _emailfield(),
-              _phonefield(),
-              _passwordfield(),
-              _confirmPasswordfield(),
-              SizedBox(
-                height: 70.0,
-              ),
-              _submitButton(),
-              SizedBox(
-                height: 40.0,
-              ),
-              BlocListener<UserBloc, UserState>(
-                  bloc: _bloc,
-                  listener: (context, state) {
-                    if (state is Loading) {
-                      showDialog(
-                        context: context,
-                        child: AlertDialog(
-                          elevation: 0.0,
-                          backgroundColor: Colors.transparent,
-                          content: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              CircularProgressIndicator(),
-                            ],
-                          ),
-                        ),
-                      );
-                    } else if (state is Error) {
-                      Navigator.pop(context);
-                      Scaffold.of(context).showSnackBar(
-                        SnackBar(
-                          content: Container(
-                            alignment: Alignment.center,
-                            height: 20.0,
-                            child: Text(state.error),
-                          ),
-                        ),
-                      );
-                    } else if (state is Authenticated) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Home()),
-                      );
-                    }
-                  },
-                  child: Container())
+                height: 210,
+                width: MediaQuery.of(context).size.height,
+                color: ConstantData().red,
+              )
             ],
           ),
-        ),
+          SingleChildScrollView(
+            child: Container(
+              margin: EdgeInsets.only(top: 125.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            height: 140.0,
+                            margin: EdgeInsets.symmetric(horizontal: 80.0),
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage('assets/sandwitch.png'),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 90.0),
+                            child: Text(
+                              'مرحبا بك …',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              'تسجيل حساب جديد',
+                              style: TextStyle(
+                                  color: ConstantData().red,
+                                  fontSize: 27,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    input(
+                        img: 'assets/person.png',
+                        con: _name,
+                        val: (val) {
+                          if (val.isEmpty) {
+                            return 'يرجي ادخال اسم صحيح';
+                          }
+                        },
+                        title: 'الاسم'),
+                    input(
+                        img: 'assets/email.png',
+                        con: _email,
+                        val: (val) {
+                          if (val.isEmpty || !val.contains('@')) {
+                            return 'يرجي ادخال بريد الكترني صحيح';
+                          }
+                        },
+                        title: 'البريد الالكتروني'),
+                    input(
+                        img: 'assets/mobile.png',
+                        con: _phone,
+                        val: (val) {
+                          if (val.isEmpty) {
+                            return 'يرجي ادخال جوال صحيح';
+                          }
+                        },
+                        title: 'رقم الجوال'),
+                    input(
+                        img: 'assets/lock.png',
+                        con: _password,
+                        password: true,
+                        val: (val) {
+                          if (val.isEmpty) {
+                            return 'يرجي ادخال كلمه سر صحيح';
+                          }
+                        },
+                        title: 'كلمة المرور'),
+                    input(
+                        img: 'assets/lock.png',
+                        con: _cpassword,
+                        password: true,
+                        val: (val) {
+                          if (val.isEmpty) {
+                            return 'يرجي ادخال كلمه سر صحيح';
+                          }
+                        },
+                        title: 'كلمة المرور'),
+                    SizedBox(
+                      height: 32.0,
+                    ),
+                    _submitButton(),
+                    SizedBox(
+                      height: 40.0,
+                    ),
+                    BlocListener<UserBloc, UserState>(
+                        bloc: _bloc,
+                        listener: (context, state) {
+                          if (state is Loading) {
+                            showDialog(
+                              context: context,
+                              child: AlertDialog(
+                                elevation: 0.0,
+                                backgroundColor: Colors.transparent,
+                                content: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    CircularProgressIndicator(),
+                                  ],
+                                ),
+                              ),
+                            );
+                          } else if (state is Error) {
+                            Navigator.pop(context);
+                            Scaffold.of(context).showSnackBar(
+                              SnackBar(
+                                content: Container(
+                                  alignment: Alignment.center,
+                                  height: 20.0,
+                                  child: Text(state.error),
+                                ),
+                              ),
+                            );
+                          } else if (state is Authenticated) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => Home()),
+                            );
+                          }
+                        },
+                        child: Container())
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -117,13 +193,26 @@ class RegisterScrren extends StatelessWidget {
               },
               child: Container(
                 alignment: Alignment.center,
-                height: 45,
+                height: 53,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: Color(0xffFABF18)),
-                child: Text(
-                  'تسجيل الدخول',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    borderRadius: BorderRadius.circular(15),
+                    color: ConstantData().yellow),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Text(
+                      'تسجيل',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      width: 100.0,
+                    ),
+                    Icon(Icons.arrow_forward),
+                    SizedBox(
+                      width: 40.0,
+                    ),
+                  ],
                 ),
               ),
             ),
